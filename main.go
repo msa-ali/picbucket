@@ -32,7 +32,20 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 }
 
-func pathhandler(w http.ResponseWriter, r *http.Request) {
+// func pathhandler(w http.ResponseWriter, r *http.Request) {
+// 	switch r.URL.Path {
+// 	case "/":
+// 		homehandler(w, r)
+// 	case "/contact":
+// 		contactHandler(w, r)
+// 	default:
+// 		notFoundhandler(w, r)
+// 	}
+// }
+
+type Router struct{}
+
+func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/":
 		homehandler(w, r)
@@ -41,13 +54,13 @@ func pathhandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		notFoundhandler(w, r)
 	}
-
 }
 
 func main() {
 	// http.HandleFunc("/", homehandler)
 	// http.HandleFunc("/contact", contactHandler)
-	http.HandleFunc("/", pathhandler)
+	// http.HandleFunc("/", pathhandler)
+	var router Router
 	fmt.Println("Starting the server at port :8080")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", router)
 }
