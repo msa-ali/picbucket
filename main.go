@@ -6,7 +6,7 @@ import (
 )
 
 func handlerFunc(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "<h1>Welcome to my awesome website</h1>")
+	fmt.Fprint(w, "<h1>Welcome to picbucket</h1>")
 }
 
 func main() {
