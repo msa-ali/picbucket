@@ -10,6 +10,13 @@ func homehandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Welcome to picbucket</h1>")
 }
 
+func notFoundhandler(w http.ResponseWriter, r *http.Request) {
+	// w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	// w.WriteHeader(http.StatusNotFound)
+	// fmt.Fprint(w, "<h1>404 - page not found</h1>")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+}
+
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, `
@@ -25,9 +32,22 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 }
 
+func pathhandler(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/":
+		homehandler(w, r)
+	case "/contact":
+		contactHandler(w, r)
+	default:
+		notFoundhandler(w, r)
+	}
+
+}
+
 func main() {
-	http.HandleFunc("/", homehandler)
-	http.HandleFunc("/contact", contactHandler)
+	// http.HandleFunc("/", homehandler)
+	// http.HandleFunc("/contact", contactHandler)
+	http.HandleFunc("/", pathhandler)
 	fmt.Println("Starting the server at port :8080")
 	http.ListenAndServe(":8080", nil)
 }
