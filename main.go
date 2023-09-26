@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func homehandler(w http.ResponseWriter, r *http.Request) {
@@ -32,35 +34,11 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 }
 
-func pathhandler(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/":
-		homehandler(w, r)
-	case "/contact":
-		contactHandler(w, r)
-	default:
-		notFoundhandler(w, r)
-	}
-}
-
-// type Router struct{}
-
-// func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-// 	switch r.URL.Path {
-// 	case "/":
-// 		homehandler(w, r)
-// 	case "/contact":
-// 		contactHandler(w, r)
-// 	default:
-// 		notFoundhandler(w, r)
-// 	}
-// }
-
 func main() {
-	// http.HandleFunc("/", homehandler)
-	// http.HandleFunc("/contact", contactHandler)
-	// http.HandleFunc("/", pathhandler)
-	// var router Router
+	r := chi.NewRouter()
+	r.Get("/", homehandler)
+	r.Get("/contact", contactHandler)
+	r.NotFound(notFoundhandler)
 	fmt.Println("Starting the server at port :8080")
-	http.ListenAndServe(":8080", http.HandlerFunc(pathhandler))
+	http.ListenAndServe(":8080", r)
 }
