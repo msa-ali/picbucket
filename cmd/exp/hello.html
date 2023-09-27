@@ -1,0 +1,13 @@
+<h1>Hello, {{.Name}}</h1>
+<p>My age is {{.Age}}</p>
+<p>You have visited {{.Meta.Visits}} times !!</p>
+<p>My Bio: {{.Bio}}</p>
+
+<script>
+    const user = {
+        "name": {{.Name}},
+        "bio": {{.Bio}},
+        "age": {{.Age}}
+    };
+    console.log(user)
+</script>
