@@ -2,14 +2,29 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func homehandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>Welcome to picbucket</h1>")
+	tplPath := filepath.Join("templates", "home.gohtml")
+	template, err := template.ParseFiles(tplPath)
+	if err != nil {
+		log.Printf("parsing template: %v", err)
+		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
+		return
+	}
+	err = template.Execute(w, nil)
+	if err != nil {
+		log.Printf("error while executing template: %v", err)
+		http.Error(w, "There was an error executing the template", http.StatusInternalServerError)
+		return
+	}
 }
 
 func notFoundhandler(w http.ResponseWriter, r *http.Request) {
