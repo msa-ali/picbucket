@@ -43,10 +43,16 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	executeTemplate(w, tplPath)
 }
 
+func faqHandler(w http.ResponseWriter, r *http.Request) {
+	tplPath := filepath.Join("templates", "faq.gohtml")
+	executeTemplate(w, tplPath)
+}
+
 func main() {
 	r := chi.NewRouter()
 	r.Get("/", homehandler)
 	r.Get("/contact", contactHandler)
+	r.Get("/faq", faqHandler)
 	r.NotFound(notFoundhandler)
 	fmt.Println("Starting the server at port :8080")
 	http.ListenAndServe(":8080", r)
