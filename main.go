@@ -10,10 +10,9 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func homehandler(w http.ResponseWriter, r *http.Request) {
+func executeTemplate(w http.ResponseWriter, filePath string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tplPath := filepath.Join("templates", "home.gohtml")
-	template, err := template.ParseFiles(tplPath)
+	template, err := template.ParseFiles(filePath)
 	if err != nil {
 		log.Printf("parsing template: %v", err)
 		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
@@ -27,6 +26,11 @@ func homehandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func homehandler(w http.ResponseWriter, r *http.Request) {
+	tplPath := filepath.Join("templates", "home.gohtml")
+	executeTemplate(w, tplPath)
+}
+
 func notFoundhandler(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// w.WriteHeader(http.StatusNotFound)
@@ -35,18 +39,8 @@ func notFoundhandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `
-		<h1>Contact Page</h1>
-		<p>
-			You can get in touch with me at 
-				<a 
-					href="mailto:altamashattari786@gmail.com"
-				>
-				altamashattari786@gmail.com
-			</a>
-		</p>
-	`)
+	tplPath := filepath.Join("templates", "contact.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func main() {
