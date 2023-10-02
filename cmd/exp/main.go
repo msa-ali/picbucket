@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"html/template"
 	"os"
 )
@@ -33,4 +35,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// errorf
+	fmt.Println("\n", CreateOrg())
+}
+
+func Connect() error {
+	return errors.New("connection failed")
+}
+
+func CreateUser() error {
+	err := Connect()
+	if err != nil {
+		return fmt.Errorf("create user: %w", err)
+	}
+	// continue processing
+	return nil
+}
+
+func CreateOrg() error {
+	err := CreateUser()
+	if err != nil {
+		return fmt.Errorf("create Org: %w", err)
+	}
+	// continue processing
+	return nil
 }

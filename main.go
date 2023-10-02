@@ -26,10 +26,15 @@ func homehandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func notFoundhandler(w http.ResponseWriter, r *http.Request) {
+	// 1
 	// w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// w.WriteHeader(http.StatusNotFound)
 	// fmt.Fprint(w, "<h1>404 - page not found</h1>")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	// 2
+	// http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	// 3
+	tplPath := filepath.Join("templates", "notfound.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
