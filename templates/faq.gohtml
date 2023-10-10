@@ -39,33 +39,19 @@
     <header>
         <h1>FAQ - Pic Bucket</h1>
     </header>
-
     <div class="container">
-        <div class="faq-item">
-            <div class="question">Q: What is Pic Bucket?</div>
-            <div class="answer">A: Pic Bucket is a web application designed for storing and organizing photos. Users can upload, store, and manage their photos using this platform.</div>
-        </div>
-
-        <div class="faq-item">
-            <div class="question">Q: How do I upload photos to Pic Bucket?</div>
-            <div class="answer">A: To upload photos to Pic Bucket, log in to your account, go to the 'Upload' section, click on the 'Choose File' button, select the photos you want to upload from your device, and then click 'Upload'.</div>
-        </div>
-
-        <div class="faq-item">
-            <div class="question">Q: Can I create albums to organize my photos?</div>
-            <div class="answer">A: Yes, you can create albums in Pic Bucket to organize your photos. After uploading photos, you can create a new album and assign selected photos to that album.</div>
-        </div>
-
-        <div class="faq-item">
-            <div class="question">Q: How do I view my saved photos?</div>
-            <div class="answer">A: You can view your saved photos by going to the 'My Photos' or 'Albums' section in Pic Bucket. There, you will find all the photos and albums you have saved.</div>
-        </div>
-
-        <div class="faq-item">
-            <div class="question">Q: Is Pic Bucket free to use?</div>
-            <div class="answer">A: Pic Bucket offers both free and premium plans. The free plan allows limited storage space and features, while the premium plan provides more storage and additional features. You can choose the plan that best suits your needs.</div>
-        </div>
+        {{range .}}
+            {{template "qa" .}}
+        {{end}}
     </div>
 </body>
 
 </html>
+
+
+{{define "qa"}}
+    <div class="faq-item">
+            <div class="question">Q: {{.Question}}</div>
+            <div class="answer">A: {{.Answer}}</div>
+        </div>
+{{end}}
