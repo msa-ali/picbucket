@@ -1,41 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - Pic Bucket</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .faq-item {
-            margin-bottom: 20px;
-        }
-
-        .question {
-            font-weight: bold;
-        }
-    </style>
-</head>
-
-<body>
+{{template "header" .}}
     <header>
         <h1>FAQ - Pic Bucket</h1>
     </header>
@@ -44,10 +7,7 @@
             {{template "qa" .}}
         {{end}}
     </div>
-</body>
-
-</html>
-
+{{template "footer" .}}
 
 {{define "qa"}}
     <div class="faq-item">
