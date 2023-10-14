@@ -1,17 +1,17 @@
 {{template "header" .}}
 <header class="bg-blue-500 text-white py-4">
-    <h1 class="text-3xl font-bold text-center">FAQ - Pic Bucket</h1>
+  <h1 class="text-3xl font-bold text-center">FAQ - Pic Bucket</h1>
 </header>
 <div class="container mx-auto mt-8 mb-16">
-    {{range .}}
-        {{template "qa" .}}
-    {{end}}
+  {{range .}}
+  {{template "qa" .}}
+  {{ end }}
 </div>
 {{template "footer" .}}
 
 {{define "qa"}}
 <div class="faq-item border-b border-gray-300 py-4">
-    <div class="font-bold text-lg mb-2">Q: {{.Question}}</div>
-    <div class="text-gray-700">A: {{.Answer}}</div>
+  <div class="font-bold text-lg mb-2">Q: {{.Question}}</div>
+  <div class="text-gray-700">A: {{.Answer}}</div>
 </div>
-{{end}}
+{{ end }}
