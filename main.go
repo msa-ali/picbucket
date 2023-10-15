@@ -5,12 +5,27 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+
 	"github.com/msa-ali/picbucket/controllers"
+	"github.com/msa-ali/picbucket/models"
 	"github.com/msa-ali/picbucket/templates"
 	"github.com/msa-ali/picbucket/views"
 )
 
 func main() {
+	// init Database
+	db, err := models.Open(models.DefaultPostgresConfig())
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// user controller
+	usersC := controllers.Users{
+		UserService: &models.UserService{
+			DB: db,
+		},
+	}
 	r := chi.NewRouter()
 
 	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
@@ -19,7 +34,6 @@ func main() {
 	tpl = views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(tpl))
 
-	usersC := controllers.Users{}
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	r.Get("/signup", usersC.New)
 	r.Post("/users", usersC.Create)

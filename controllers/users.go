@@ -3,12 +3,16 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/msa-ali/picbucket/models"
+	"github.com/msa-ali/picbucket/utils"
 )
 
 type Users struct {
 	Templates struct {
 		New Template
 	}
+	UserService *models.UserService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
@@ -28,10 +32,15 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	email := r.PostForm.Get("email")
 	pass := r.PostForm.Get("password")
-	if email == "" || pass == "" {
-		http.Error(w, "invalid form values", http.StatusBadRequest)
+	if !utils.ValidateEmail(email) || len(pass) < 4 {
+		http.Error(w, "create user: invalid email or password format", http.StatusBadRequest)
 		return
 	}
-	fmt.Println(email, pass)
-	fmt.Fprint(w, "User signed up!!")
+	user, err := u.UserService.Create(email, pass)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "error while creating user", http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintf(w, "User created: %+v", user)
 }
