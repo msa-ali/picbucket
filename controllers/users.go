@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	"github.com/msa-ali/picbucket/models"
 	"github.com/msa-ali/picbucket/utils"
 )
@@ -18,17 +20,21 @@ type Users struct {
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
+		Email     string
+		CSRFField template.HTML
 	}
 	data.Email = r.FormValue("email")
+	data.CSRFField = csrf.TemplateField(r)
 	u.Templates.New.Execute(w, data)
 }
 
 func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
+		Email     string
+		CSRFField template.HTML
 	}
 	data.Email = r.FormValue("email")
+	data.CSRFField = csrf.TemplateField(r)
 	u.Templates.SignIn.Execute(w, data)
 }
 
@@ -63,5 +69,21 @@ func (u Users) Authenticate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error while signing user", http.StatusInternalServerError)
 		return
 	}
+	cookie := http.Cookie{
+		Name:     "email",
+		Value:    email,
+		Path:     "/",
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
 	fmt.Fprintf(w, "User signed in: %+v", user)
+}
+
+func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("email")
+	if err != nil {
+		fmt.Fprint(w, "The email cookie could not be read.")
+		return
+	}
+	fmt.Fprintf(w, "Email cookie: %s\n", cookie.Value)
 }

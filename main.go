@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/csrf"
 
 	"github.com/msa-ali/picbucket/controllers"
 	"github.com/msa-ali/picbucket/models"
@@ -41,6 +42,7 @@ func main() {
 	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.Authenticate)
+	r.Get("/users/me", usersC.CurrentUser)
 
 	tpl = views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
 	r.Get("/faq", controllers.FAQ(tpl))
@@ -49,7 +51,9 @@ func main() {
 	r.NotFound(controllers.StaticHandler(tpl))
 
 	fmt.Println("Starting the server at port :8080")
-	http.ListenAndServe(":8080", r)
+	csrfKey := "dmUQrNkHKnGBrdovbeLNNqjAIzinTVDa"
+	csrfMiddleware := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
+	http.ListenAndServe(":8080", csrfMiddleware(r))
 }
 
 // func notFoundhandler(w http.ResponseWriter, r *http.Request) {
@@ -62,4 +66,12 @@ func main() {
 // 	// 3
 // 	tplPath := filepath.Join("templates", "notfound.gohtml")
 // 	executeTemplate(w, tplPath)
+// }
+
+// func TimerMiddleware(h http.HandlerFunc) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		start := time.Now()
+// 		h(w, r)
+// 		fmt.Printf("Request time for %s - %v\n\n", r.URL.Path, time.Since(start))
+// 	}
 // }

@@ -6,6 +6,9 @@
     action="/signin"
     method="post"
   >
+    <div class="hidden">
+      {{.CSRFField}}
+    </div>
     <div class="mb-4">
       <label for="email" class="block text-sm font-medium text-gray-600 mb-1"
         >Email Address</label
