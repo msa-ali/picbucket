@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/msa-ali/picbucket/context"
 	"github.com/msa-ali/picbucket/models"
 	"github.com/msa-ali/picbucket/utils"
 )
@@ -83,15 +84,8 @@ func (u Users) Authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
-	token, err := utils.ReadCookie(r, utils.CookieSession)
-	if err != nil {
-		fmt.Println("CurrentUser: ", err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
-	user, err := u.SessionService.User(token)
-	if err != nil {
-		fmt.Println("CurrentUser: ", err)
+	user := context.User(r.Context())
+	if user == nil {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}

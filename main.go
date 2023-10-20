@@ -27,13 +27,14 @@ func main() {
 		panic(err)
 	}
 	// user controller
+	sessionService := models.SessionService{
+		DB: db,
+	}
 	usersC := controllers.Users{
 		UserService: &models.UserService{
 			DB: db,
 		},
-		SessionService: &models.SessionService{
-			DB: db,
-		},
+		SessionService: &sessionService,
 	}
 	r := chi.NewRouter()
 
@@ -59,10 +60,14 @@ func main() {
 	tpl = views.Must(views.ParseFS(templates.FS, "notfound.gohtml"))
 	r.NotFound(controllers.StaticHandler(tpl))
 
+	umw := controllers.UserMiddleware{
+		SessionService: &sessionService,
+	}
+
 	fmt.Println("Starting the server at port :8080")
 	csrfKey := "dmUQrNkHKnGBrdovbeLNNqjAIzinTVDa"
 	csrfMiddleware := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
-	http.ListenAndServe(":8080", csrfMiddleware(r))
+	http.ListenAndServe(":8080", csrfMiddleware(umw.SetUser(r)))
 }
 
 // func notFoundhandler(w http.ResponseWriter, r *http.Request) {
