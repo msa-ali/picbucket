@@ -9,10 +9,13 @@ db-cmd:
 
 # Migration Commands
 mig-up:
-	goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" up
+	cd migrations && goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" up
 
 mig-down:
-	goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" down
+	cd migrations && goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" down
 
 mig-status:
-	goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" status
+	cd migrations && goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" status
+
+mig-fix:
+	cd migrations && goose fix
