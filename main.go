@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/csrf"
 
 	"github.com/msa-ali/picbucket/controllers"
+	"github.com/msa-ali/picbucket/migrations"
 	"github.com/msa-ali/picbucket/models"
 	"github.com/msa-ali/picbucket/templates"
 	"github.com/msa-ali/picbucket/views"
@@ -21,7 +22,7 @@ func main() {
 	}
 	defer db.Close()
 
-	err = models.Migration(db, "migrations")
+	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
 		panic(err)
 	}
