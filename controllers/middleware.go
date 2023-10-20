@@ -30,3 +30,15 @@ func (umw UserMiddleware) SetUser(next http.Handler) http.Handler {
 	}
 	return http.HandlerFunc(handler)
 }
+
+func (umw UserMiddleware) RequireUser(next http.Handler) http.Handler {
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		user := context.User(r.Context())
+		if user == nil {
+			http.Redirect(w, r, "/signin", http.StatusFound)
+			return
+		}
+		next.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(handler)
+}

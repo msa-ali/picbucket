@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	// init Database
+	// Setup database and do migration
 	db, err := models.Open(models.DefaultPostgresConfig())
 	if err != nil {
 		panic(err)
@@ -26,16 +26,31 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// user controller
+
+	// Setup services
 	sessionService := models.SessionService{
 		DB: db,
 	}
-	usersC := controllers.Users{
-		UserService: &models.UserService{
-			DB: db,
-		},
+	userService := models.UserService{
+		DB: db,
+	}
+
+	// Setup middlewares
+	umw := controllers.UserMiddleware{
 		SessionService: &sessionService,
 	}
+	csrfKey := "dmUQrNkHKnGBrdovbeLNNqjAIzinTVDa"
+	csrfMiddleware := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
+
+	// Setup Controller
+	usersC := controllers.Users{
+		UserService:    &userService,
+		SessionService: &sessionService,
+	}
+	usersC.Templates.New = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
+	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
+
+	// setup routes
 	r := chi.NewRouter()
 
 	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
@@ -44,29 +59,20 @@ func main() {
 	tpl = views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(tpl))
 
-	usersC.Templates.New = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
-	r.Get("/signup", usersC.New)
-	r.Post("/users", usersC.Create)
-
-	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
-	r.Get("/signin", usersC.SignIn)
-	r.Post("/signin", usersC.Authenticate)
-	r.Post("/signout", usersC.SignOut)
-	r.Get("/users/me", usersC.CurrentUser)
-
 	tpl = views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
 	r.Get("/faq", controllers.FAQ(tpl))
 
 	tpl = views.Must(views.ParseFS(templates.FS, "notfound.gohtml"))
 	r.NotFound(controllers.StaticHandler(tpl))
 
-	umw := controllers.UserMiddleware{
-		SessionService: &sessionService,
-	}
+	r.Get("/signup", usersC.New)
+	r.Post("/users", usersC.Create)
+	r.Get("/signin", usersC.SignIn)
+	r.Post("/signin", usersC.Authenticate)
+	r.Post("/signout", usersC.SignOut)
+	r.Get("/users/me", usersC.CurrentUser)
 
 	fmt.Println("Starting the server at port :8080")
-	csrfKey := "dmUQrNkHKnGBrdovbeLNNqjAIzinTVDa"
-	csrfMiddleware := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
 	http.ListenAndServe(":8080", umw.SetUser(csrfMiddleware(r)))
 }
 
