@@ -67,7 +67,7 @@ func main() {
 	fmt.Println("Starting the server at port :8080")
 	csrfKey := "dmUQrNkHKnGBrdovbeLNNqjAIzinTVDa"
 	csrfMiddleware := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
-	http.ListenAndServe(":8080", csrfMiddleware(umw.SetUser(r)))
+	http.ListenAndServe(":8080", umw.SetUser(csrfMiddleware(r)))
 }
 
 // func notFoundhandler(w http.ResponseWriter, r *http.Request) {
