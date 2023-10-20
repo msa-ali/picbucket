@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/pressly/goose/v3"
 )
 
 type PostgresConfig struct {
@@ -41,4 +42,14 @@ func Open(cfg PostgresConfig) (*sql.DB, error) {
 		return nil, fmt.Errorf("open: %w", err)
 	}
 	return db, nil
+}
+
+func Migration(db *sql.DB, dir string) error {
+	if err := goose.SetDialect("postgres"); err != nil {
+		return fmt.Errorf("migrate: %w", err)
+	}
+	if err := goose.Up(db, dir); err != nil {
+		return fmt.Errorf("migrate: %w", err)
+	}
+	return nil
 }

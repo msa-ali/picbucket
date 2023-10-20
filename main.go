@@ -21,6 +21,10 @@ func main() {
 	}
 	defer db.Close()
 
+	err = models.Migration(db, "migrations")
+	if err != nil {
+		panic(err)
+	}
 	// user controller
 	usersC := controllers.Users{
 		UserService: &models.UserService{

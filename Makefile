@@ -14,6 +14,9 @@ mig-up:
 mig-down:
 	cd migrations && goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" down
 
+mig-reset:
+	cd migrations && goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" reset
+
 mig-status:
 	cd migrations && goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" status
 
