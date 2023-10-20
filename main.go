@@ -52,6 +52,7 @@ func main() {
 
 	// setup routes
 	r := chi.NewRouter()
+	r.Use(csrfMiddleware)
 
 	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
 	r.Get("/", controllers.StaticHandler(tpl))
@@ -70,10 +71,16 @@ func main() {
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.Authenticate)
 	r.Post("/signout", usersC.SignOut)
+
+	r.Route("/users/me", func(r chi.Router) {
+		r.Use(umw.RequireUser)
+		r.Get("/", usersC.CurrentUser)
+	})
+
 	r.Get("/users/me", usersC.CurrentUser)
 
 	fmt.Println("Starting the server at port :8080")
-	http.ListenAndServe(":8080", umw.SetUser(csrfMiddleware(r)))
+	http.ListenAndServe(":8080", umw.SetUser(r))
 }
 
 // func notFoundhandler(w http.ResponseWriter, r *http.Request) {
