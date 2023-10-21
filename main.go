@@ -11,10 +11,17 @@ import (
 	"github.com/msa-ali/picbucket/migrations"
 	"github.com/msa-ali/picbucket/models"
 	"github.com/msa-ali/picbucket/templates"
+	"github.com/msa-ali/picbucket/utils"
 	"github.com/msa-ali/picbucket/views"
 )
 
 func main() {
+	// LOAD ENV
+	err := utils.LoadEnv()
+	if err != nil {
+		panic(err)
+	}
+
 	// Setup database and do migration
 	db, err := models.Open(models.DefaultPostgresConfig())
 	if err != nil {
