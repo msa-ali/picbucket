@@ -60,3 +60,21 @@ func (us *UserService) Authenticate(email, password string) (*User, error) {
 	}
 	return &user, nil
 }
+
+func (us *UserService) UpdatePassword(userID int, password string) error {
+	hashedByte, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Printf("error while hashing: %v\n", password)
+		return fmt.Errorf("update password: %v", err)
+	}
+	passwordHash := string(hashedByte)
+	_, err = us.DB.Exec(`
+	UPDATE users
+	SET password_hash = $2
+	WHERE id = $1;
+	`, userID, passwordHash)
+	if err != nil {
+		return fmt.Errorf("update password: %v", err)
+	}
+	return nil
+}
