@@ -85,9 +85,9 @@ func main() {
 	})
 
 	r.Get("/users/me", usersC.CurrentUser)
-
-	fmt.Println("Starting the server at port :8080")
-	http.ListenAndServe(":8080", umw.SetUser(r))
+	port := utils.GetEnv().ServerPort
+	fmt.Printf("Starting the server at port :%s\n", port)
+	http.ListenAndServe(fmt.Sprintf(":%s", port), umw.SetUser(r))
 }
 
 // func notFoundhandler(w http.ResponseWriter, r *http.Request) {

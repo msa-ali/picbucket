@@ -24,6 +24,11 @@ type Env struct {
 	DBPassword string
 	DBName     string
 	DBSSLMode  string
+
+	// Server Env vars
+
+	ServerUrl  string
+	ServerPort string
 }
 
 var env Env
@@ -46,6 +51,12 @@ func LoadEnv() error {
 	if err != nil {
 		return err
 	}
+
+	err = loadServerEnv()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -85,6 +96,15 @@ func loadDBEnv() error {
 		env.DBSSLMode == "" ||
 		env.DBUser == "" {
 		return getInvalidEnvError("loadDBEnv")
+	}
+	return nil
+}
+
+func loadServerEnv() error {
+	env.ServerUrl = os.Getenv("SERVER_URL")
+	env.ServerPort = os.Getenv("SERVER_PORT")
+	if env.ServerUrl == "" || env.ServerPort == "" {
+		return getInvalidEnvError("loadServerEnv")
 	}
 	return nil
 }
