@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	env := utils.GetEnv()
 
 	// Setup database and do migration
 	db, err := models.Open(models.DefaultPostgresConfig())
@@ -35,24 +36,37 @@ func main() {
 	}
 
 	// Setup services
-	sessionService := models.SessionService{
+	userService := &models.UserService{
 		DB: db,
 	}
-	userService := models.UserService{
+	sessionService := &models.SessionService{
 		DB: db,
+	}
+	pwResetService := &models.PasswordResetService{
+		DB: db,
+	}
+	emailService, err := models.NewEmailService(models.SMTPConfig{
+		Host:     env.SMTPHost,
+		Port:     env.SMTPPort,
+		Username: env.SMTPUsername,
+		Password: env.SMTPPassword,
+	})
+	if err != nil {
+		panic(err)
 	}
 
 	// Setup middlewares
 	umw := controllers.UserMiddleware{
-		SessionService: &sessionService,
+		SessionService: sessionService,
 	}
-	csrfKey := "dmUQrNkHKnGBrdovbeLNNqjAIzinTVDa"
-	csrfMiddleware := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
+	csrfMiddleware := csrf.Protect([]byte(env.CSRFKey), csrf.Secure(env.CSRFSecure))
 
 	// Setup Controller
 	usersC := controllers.Users{
-		UserService:    &userService,
-		SessionService: &sessionService,
+		UserService:          userService,
+		SessionService:       sessionService,
+		PasswordResetService: pwResetService,
+		EmailService:         emailService,
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))

@@ -6,6 +6,7 @@ import (
 	"io/fs"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/msa-ali/picbucket/utils"
 	"github.com/pressly/goose/v3"
 )
 
@@ -19,13 +20,14 @@ type PostgresConfig struct {
 }
 
 func DefaultPostgresConfig() PostgresConfig {
+	env := utils.GetEnv()
 	return PostgresConfig{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "admin",
-		Password: "admin",
-		Database: "picbucket",
-		SSLMode:  "disable",
+		Host:     env.DBHost,
+		Port:     env.DBPort,
+		User:     env.DBUser,
+		Password: env.DBPassword,
+		Database: env.DBName,
+		SSLMode:  env.DBSSLMode,
 	}
 }
 

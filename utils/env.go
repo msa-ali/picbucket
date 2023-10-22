@@ -29,6 +29,8 @@ type Env struct {
 
 	ServerUrl  string
 	ServerPort string
+	CSRFKey    string
+	CSRFSecure bool
 }
 
 var env Env
@@ -103,7 +105,15 @@ func loadDBEnv() error {
 func loadServerEnv() error {
 	env.ServerUrl = os.Getenv("SERVER_URL")
 	env.ServerPort = os.Getenv("SERVER_PORT")
-	if env.ServerUrl == "" || env.ServerPort == "" {
+	env.CSRFKey = os.Getenv("CSRF_KEY")
+	csrfSecure, err := strconv.ParseBool(os.Getenv("CSRF_SECURE"))
+	if err != nil {
+		return getInvalidEnvError("loadServerEnv")
+	}
+	env.CSRFSecure = csrfSecure
+	if env.ServerUrl == "" ||
+		env.ServerPort == "" ||
+		env.CSRFKey == "" {
 		return getInvalidEnvError("loadServerEnv")
 	}
 	return nil
