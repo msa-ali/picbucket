@@ -11,4 +11,6 @@ goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbuc
 goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" up
 
  goose postgres "host=localhost port=5432 user=admin password=admin dbname=picbucket sslmode=disable" down
+
+ goose fix
 ```

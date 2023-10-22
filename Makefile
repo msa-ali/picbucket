@@ -22,3 +22,9 @@ mig-status:
 
 mig-fix:
 	cd migrations && goose fix
+
+pid:
+	whoseport 8080
+
+kill:
+	kill -9 
