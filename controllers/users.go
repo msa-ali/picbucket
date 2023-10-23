@@ -42,21 +42,24 @@ func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 
 // note: gorilla/schema is 3rd party lib which can be used to handle complex forms
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email    string
+		Password string
+	}
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	email := r.PostForm.Get("email")
-	pass := r.PostForm.Get("password")
-	if !utils.ValidateEmail(email) || len(pass) < 4 {
+	data.Email = r.PostForm.Get("email")
+	data.Password = r.PostForm.Get("password")
+	if !utils.ValidateEmail(data.Email) || len(data.Password) < 4 {
 		http.Error(w, "create user: invalid email or password format", http.StatusBadRequest)
 		return
 	}
-	user, err := u.UserService.Create(email, pass)
+	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "error while creating user", http.StatusInternalServerError)
+		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
 	session, err := u.SessionService.Create(user.ID)

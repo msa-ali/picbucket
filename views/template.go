@@ -36,11 +36,7 @@ func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
 				return "", fmt.Errorf("currentUser not implemented")
 			},
 			"errors": func() []string {
-				return []string{
-					"Don't do that!",
-					"The email address you provided is already associated with an account",
-					"Something went wrong",
-				}
+				return nil
 			},
 		},
 	)
@@ -64,7 +60,7 @@ func Parse(filepath string) (Template, error) {
 	}, nil
 }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}, errs ...error) {
 	tpl, err := t.htmlTpl.Clone()
 	if err != nil {
 		log.Printf("closing template: %v", err)
@@ -78,6 +74,13 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 			},
 			"currentUser": func() *models.User {
 				return context.User(r.Context())
+			},
+			"errors": func() []string {
+				var errMsgs []string
+				for _, err := range errs {
+					errMsgs = append(errMsgs, err.Error())
+				}
+				return errMsgs
 			},
 		},
 	)
