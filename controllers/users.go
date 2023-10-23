@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/msa-ali/picbucket/context"
+	"github.com/msa-ali/picbucket/errors"
 	"github.com/msa-ali/picbucket/models"
 	"github.com/msa-ali/picbucket/utils"
 )
@@ -59,6 +60,9 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
+		if errors.Is(err, models.ErrEmailTaken) {
+			err = errors.Public(err, "Given email is already associated with a different account")
+		}
 		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
