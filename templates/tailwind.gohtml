@@ -10,7 +10,7 @@
     <header class="bg-gradient-to-r from-blue-800 to-indigo-800 text-white">
       <nav class="px-8 py-6 flex items-center space-x-12">
         <div class="text-4xl font-serif">Picbucket</div>
-        <div class="flex-grow">
+        <div class="">
           <a class="text-lg font-semibold hover:text-blue-100 pr-8" href="/">
             Home
           </a>
@@ -24,6 +24,13 @@
             FAQ
           </a>
         </div>
+        {{if currentUser}}
+          <div class="flex flex-grow flex-row-reverse">
+            <a href="/galleries">Galleries</a>
+          </div>
+        {{else}}
+        <div class="flex-grow"></div>
+        {{end}}
         <div class="space-x-4">
           {{if currentUser}}
           <form action="/signout" method="post" class="inline pr-4">

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"path"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/csrf"
@@ -45,6 +46,9 @@ func main() {
 	pwResetService := &models.PasswordResetService{
 		DB: db,
 	}
+	galleryService := &models.GalleryService{
+		DB: db,
+	}
 	emailService, err := models.NewEmailService(models.SMTPConfig{
 		Host:     env.SMTPHost,
 		Port:     env.SMTPPort,
@@ -59,7 +63,11 @@ func main() {
 	umw := controllers.UserMiddleware{
 		SessionService: sessionService,
 	}
-	csrfMiddleware := csrf.Protect([]byte(env.CSRFKey), csrf.Secure(env.CSRFSecure))
+	csrfMiddleware := csrf.Protect(
+		[]byte(env.CSRFKey),
+		csrf.Secure(env.CSRFSecure),
+		csrf.Path("/"),
+	)
 
 	// Setup Controller
 	usersC := controllers.Users{
@@ -68,11 +76,43 @@ func main() {
 		PasswordResetService: pwResetService,
 		EmailService:         emailService,
 	}
+	galleriesC := controllers.Galleries{
+		GalleryService: galleryService,
+	}
+
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
 	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(templates.FS, "forgot-password.gohtml", "tailwind.gohtml"))
 	usersC.Templates.CheckYourEmail = views.Must(views.ParseFS(templates.FS, "check-your-email.gohtml", "tailwind.gohtml"))
 	usersC.Templates.ResetPassword = views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml"))
+	galleriesC.Templates.Index = views.Must(
+		views.ParseFS(
+			templates.FS,
+			path.Join("./galleries", "index.gohtml"),
+			"tailwind.gohtml",
+		),
+	)
+	galleriesC.Templates.New = views.Must(
+		views.ParseFS(
+			templates.FS,
+			path.Join("./galleries", "new.gohtml"),
+			"tailwind.gohtml",
+		),
+	)
+	galleriesC.Templates.Edit = views.Must(
+		views.ParseFS(
+			templates.FS,
+			path.Join("./galleries", "edit.gohtml"),
+			"tailwind.gohtml",
+		),
+	)
+	galleriesC.Templates.Show = views.Must(
+		views.ParseFS(
+			templates.FS,
+			path.Join("./galleries", "show.gohtml"),
+			"tailwind.gohtml",
+		),
+	)
 
 	// setup routes
 	r := chi.NewRouter()
@@ -103,6 +143,18 @@ func main() {
 	r.Route("/users/me", func(r chi.Router) {
 		r.Use(umw.RequireUser)
 		r.Get("/", usersC.CurrentUser)
+	})
+
+	r.Route("/galleries", func(r chi.Router) {
+		r.Get("/{id}", galleriesC.Show)
+		r.Group(func(r chi.Router) {
+			r.Use(umw.RequireUser)
+			r.Get("/", galleriesC.Index)
+			r.Get("/new", galleriesC.New)
+			r.Post("/", galleriesC.Create)
+			r.Get("/{id}/edit", galleriesC.Edit)
+			r.Post("/{id}", galleriesC.Update)
+		})
 	})
 
 	r.Get("/users/me", usersC.CurrentUser)

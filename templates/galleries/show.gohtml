@@ -1,0 +1,17 @@
+{{template "header" .}}
+<div class="px-8 pt-12 w-full pb-24">
+    <h2 class="text-2xl font-semibold mb-6">{{.Title}}</h2>
+    <div class="columns-4 gap-4 space-y-4">
+        {{range .Images}}
+            <div class="h-min w-full">
+                <img
+                    src="{{.}}"
+                    alt="Gallery Image"
+                    class="w-full"
+                    loading="lazy"
+                />
+            </div>
+        {{end}}
+    </div>
+</div>
+{{template "footer" .}}
