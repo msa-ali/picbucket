@@ -31,6 +31,7 @@ type Env struct {
 	ServerPort string
 	CSRFKey    string
 	CSRFSecure bool
+	ImagesDir  string
 }
 
 var env Env
@@ -111,6 +112,10 @@ func loadServerEnv() error {
 		return getInvalidEnvError("loadServerEnv")
 	}
 	env.CSRFSecure = csrfSecure
+	env.ImagesDir = os.Getenv("IMAGES_DIR")
+	if env.ImagesDir == "" {
+		env.ImagesDir = "images"
+	}
 	if env.ServerUrl == "" ||
 		env.ServerPort == "" ||
 		env.CSRFKey == "" {
