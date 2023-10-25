@@ -71,12 +71,7 @@ func (g Galleries) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "something went wrong", http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(
-		w,
-		r,
-		fmt.Sprintf("/galleries/%d/edit", gallery.ID),
-		http.StatusFound,
-	)
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
 func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
@@ -157,4 +152,17 @@ func checkPermission(w http.ResponseWriter, r *http.Request, gallery *models.Gal
 		return fmt.Errorf("user doesn't have access to this gallery")
 	}
 	return nil
+}
+
+func (g Galleries) Delete(w http.ResponseWriter, r *http.Request) {
+	gallery, err := g.galleryByID(w, r, checkPermission)
+	if err != nil {
+		return
+	}
+	err = g.GalleryService.Delete(gallery.ID)
+	if err != nil {
+		http.Error(w, "something went wrong", http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
