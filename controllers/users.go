@@ -74,7 +74,7 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.SetCookie(w, utils.CookieSession, session.Token)
-	http.Redirect(w, r, "/users/me", http.StatusFound)
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
 func (u Users) Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +93,7 @@ func (u Users) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.SetCookie(w, utils.CookieSession, session.Token)
-	http.Redirect(w, r, "/users/me", http.StatusFound)
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
